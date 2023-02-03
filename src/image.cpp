@@ -3,6 +3,7 @@
 #include "image.h"
 
 #include <cassert>
+#include <cmath>
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb/stb_image_write.h"
 #define STB_IMAGE_IMPLEMENTATION
@@ -11,100 +12,146 @@
 namespace agl {
 
 
-Image::Image() {
+Image::Image():_width(0),_height(0){
+  //std::cout<<"default width: "<<_width<<", defult height: "<<_height<<std::endl;
 }
 
-Image::Image(int width, int height)  {
-
+Image::Image(int width, int height):_width(width),_height(height){
+  Pixel* data = new Pixel[width*height];
+  _channel = 3;
+  _data = data;
+  //std::cout<<"width: "<<_width<<", height: "<<_height<<std::endl;
 }
 
-Image::Image(const Image& orig) {
-  
+Image::Image(const Image& orig):_width(orig._width),_height(orig._height),_data(orig._data),_channel(orig._channel) {
+  //std::cout<<"copy width: "<<_width<<", copy height: "<<_height<<std::endl;
 }
 
 Image& Image::operator=(const Image& orig) {
   if (&orig == this) {
     return *this;
   }
-
+  _width=orig.width();
+  _height=orig.height();
+  _channel=orig._channel;
+  _data = orig._data;
+  //std::cout<<"assignment op "<<_width<<","<<_height<<std::endl;
   return *this;
 }
 
 Image::~Image() {
+  //std::cout<<"destructor: "<<_width<<","<<_height<<std::endl;
 }
 
 int Image::width() const { 
-   return 0;
+  return _width;
 }
 
 int Image::height() const {
-   return 0;
+  return _height;
 }
 
-char* Image::data() const {
-   return 0;
+unsigned char* Image::data() const {
+   return (unsigned char*)_data;
 }
 
 void Image::set(int width, int height, unsigned char* data) {
-}
+  _height = height;
+  _width = width;
+  _data = (Pixel*)data;
+} 
 
 bool Image::load(const std::string& filename, bool flip) {
-  return false;
+  unsigned char* data = stbi_load(filename.c_str(), &_width , &_height, &_channel, 3);
+  if(!data){
+    return false;
+  }
+  set(_width,_height,data);
+  return true;
 }
 
-
 bool Image::save(const std::string& filename, bool flip) const {
-  return false;
+  unsigned char* data = (unsigned char*) _data;
+  if(!data){
+   return false;
+  }
+  stbi_write_png(filename.c_str(),_width,_height,_channel,data,_width*_channel);
+  return true;
 }
 
 Pixel Image::get(int row, int col) const {
-  return Pixel{ 0, 0, 0 };
+  return _data[row*width()+col];
 }
 
 void Image::set(int row, int col, const Pixel& color) {
- 
+  _data[row*width()+col] = color;
 }
 
 
 Pixel Image::get(int i) const
 {
-   return Pixel{ 0, 0, 0 };
+   return _data[i];
 }
 
 void Image::set(int i, const Pixel& c)
 {
+  _data[i] = c;
 }
 
 Image Image::resize(int w, int h) const {
    Image result(w, h);
+   for( int i = 0; i < h; i++ ){
+      for( int j = 0; j < w; j++ ){
+         int r = (_height-1)*i/(h-1);
+         int c = (_width-1)*j/(w-1); 
+         result.set(i,j,get(r,c));
+      }
+   }
    return result;
 }
 
 Image Image::flipHorizontal() const {
-   Image result(0, 0);
+   Image result(_height, _width);
+   for(int i=0; i<_height; i++){
+      for(int j=0; j<_width; j++){
+         result.set(i,_width-1-j,get(i,j));
+      }
+   }
    return result;
 
 }
 
 Image Image::flipVertical() const {
-   Image result(0, 0);
+   Image result(_height, _width);
+   for(int i=0; i< _height; i++){
+      for(int j=0; j< _width; j++){
+         result.set(_height-1-i,j,get(i,j));
+      }
+   }
    return result;
 }
 
 Image Image::rotate90() const {
-   Image result(0, 0);
-  
+   Image result(_height, _width);
    return result;
 }
 
 Image Image::subimage(int startx, int starty, int w, int h) const {
-  
-   Image sub(0, 0);
-    return sub;
+   Image sub(w, h);
+   for(int i=0; i<h; i++){
+      for(int j=0; j<w; j++){
+         sub.set(i,j,get(startx+i,starty+j));
+      }
+   }
+   return sub;
 }
 
 void Image::replace(const Image& image, int startx, int starty) {
-  
+   for(int i=0; i<image.height(); i++){
+      for(int j=0; j<image.width(); j++){
+         set(startx+i,starty+j,image.get(i,j));
+      }
+   }
 }
 
 Image Image::swirl() const {
@@ -149,15 +196,34 @@ Image Image::darkest(const Image& other) const {
 }
 
 Image Image::gammaCorrect(float gamma) const {
-
-   Image result(0, 0);
- 
+   gamma = 1/gamma;
+   Image result(_width, _height);
+   for(int i=0; i< _height; i++){
+      for(int j=0; j< _width; j++){
+         unsigned char red = get(i,j).r ;
+         unsigned char green = get(i,j).g;
+         unsigned char blue = get(i,j).b;
+         red = std::pow((float)red/255,gamma) * 255;
+         green = std::pow((float)green/255,gamma) * 255;
+         blue = std::pow((float)blue/255,gamma) * 255;
+         Pixel myPixel ={red,green,blue};
+         result.set(i,j,myPixel);
+      }
+   }
    return result;
 }
 
 Image Image::alphaBlend(const Image& other, float alpha) const {
-   Image result(0, 0);
-
+   Image result(_width, _height);
+   for(int i=0; i< _height; i++){
+      for(int j=0; j< _width; j++){
+         unsigned char red = (1-alpha)*(get(i,j).r)+alpha*(other.get(i,j).r) ;
+         unsigned char green = (1-alpha)*(get(i,j).g)+alpha*(other.get(i,j).g) ;
+         unsigned char blue = (1-alpha)*(get(i,j).b)+alpha*(other.get(i,j).b) ; 
+         Pixel myPixel ={red,green,blue};
+         result.set(i,j,myPixel);
+      }
+   }
    return result;
 }
 
@@ -168,8 +234,17 @@ Image Image::invert() const {
 }
 
 Image Image::grayscale() const {
-   Image result(0, 0);
-   
+   Image result(_width, _height);
+   for(int i=0; i< _height; i++){
+      for(int j=0; j< _width; j++){
+         unsigned char red = get(i,j).r ;
+         unsigned char green = get(i,j).g;
+         unsigned char blue = get(i,j).b;
+         unsigned char average = (red+green+blue)/3;
+         Pixel myPixel ={average,average,average};
+         result.set(i,j,myPixel);
+      }
+   }
    return result;
 }
 
