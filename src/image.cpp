@@ -1,5 +1,8 @@
 // Copyright 2021, Aline Normoyle, alinen
-
+/* Name: Yue Chen
+   File: image.cpp
+   Desc: This is the file where the functions from image.h are being implemented
+*/
 #include "image.h"
 
 #include <cassert>
@@ -90,7 +93,7 @@ void Image::set(int row, int col, const Pixel& color) {
 
 Pixel Image::get(int i) const
 {
-   return _data[i];
+  return _data[i];
 }
 
 void Image::set(int i, const Pixel& c)
@@ -99,100 +102,143 @@ void Image::set(int i, const Pixel& c)
 }
 
 Image Image::resize(int w, int h) const {
-   Image result(w, h);
-   for( int i = 0; i < h; i++ ){
-      for( int j = 0; j < w; j++ ){
-         int r = (_height-1)*i/(h-1);
-         int c = (_width-1)*j/(w-1); 
-         result.set(i,j,get(r,c));
-      }
-   }
-   return result;
+  Image result(w, h);
+  for( int i = 0; i < h; i++ ){
+    for( int j = 0; j < w; j++ ){
+    int r = (_height-1)*i/(h-1);
+    int c = (_width-1)*j/(w-1); 
+    result.set(i,j,get(r,c));
+    }
+  }
+  return result;
 }
 
 Image Image::flipHorizontal() const {
-   Image result(_height, _width);
-   for(int i=0; i<_height; i++){
-      for(int j=0; j<_width; j++){
-         result.set(i,_width-1-j,get(i,j));
-      }
-   }
-   return result;
-
+  Image result(_height, _width);
+  for(int i=0; i<_height; i++){
+    for(int j=0; j<_width; j++){
+      result.set(i,_width-1-j,get(i,j));
+    }
+  }
+  return result;
 }
 
 Image Image::flipVertical() const {
-   Image result(_height, _width);
-   for(int i=0; i< _height; i++){
-      for(int j=0; j< _width; j++){
-         result.set(_height-1-i,j,get(i,j));
-      }
-   }
-   return result;
+  Image result(_height, _width);
+  for(int i=0; i< _height; i++){
+    for(int j=0; j< _width; j++){
+      result.set(_height-1-i,j,get(i,j));
+    }
+  }
+  return result;
 }
 
 Image Image::rotate90() const {
-   Image result(_height, _width);
-   return result;
+  Image result(_height, _width);
+  return result;
 }
 
 Image Image::subimage(int startx, int starty, int w, int h) const {
-   Image sub(w, h);
-   for(int i=0; i<h; i++){
-      for(int j=0; j<w; j++){
-         sub.set(i,j,get(startx+i,starty+j));
-      }
-   }
-   return sub;
+  Image sub(w, h);
+  for(int i=0; i<h; i++){
+    for(int j=0; j<w; j++){
+      sub.set(i,j,get(startx+i,starty+j));
+    }
+  }
+  return sub;
 }
 
 void Image::replace(const Image& image, int startx, int starty) {
-   for(int i=0; i<image.height(); i++){
-      for(int j=0; j<image.width(); j++){
-         set(startx+i,starty+j,image.get(i,j));
-      }
-   }
+  for(int i=0; i<image.height(); i++){
+    for(int j=0; j<image.width(); j++){
+      set(startx+i,starty+j,image.get(i,j));
+    }
+  }
 }
 
 Image Image::swirl() const {
-   Image result(0, 0);
-   return result;
+  Image result(0, 0);
+  return result;
 }
 
-Image Image::add(const Image& other) const {
-   Image result(0, 0);
-  
-   return result;
+Image Image::add(const Image& other,float alpha) const {
+  Image result(_width, _height);
+  for(int i=0; i< _height; i++){
+    for(int j=0; j< _width; j++){
+      int r = (int)get(i,j).r+(int)other.get(i,j).r*alpha;
+      unsigned char red = std::max(r,255);
+      int g = (int)get(i,j).g+other.get(i,j).g*alpha;
+      unsigned char green = std::max(g,255);
+      int b = (int)get(i,j).b+other.get(i,j).b*alpha;
+      unsigned char blue = std::max(b,255);
+      result.set(i,j,{red,green,blue});
+    }
+  }
+  return result;
 }
 
-Image Image::subtract(const Image& other) const {
-   Image result(0, 0);
-   
-   return result;
+Image Image::subtract(const Image& other,float alpha) const {
+  Image result(_width, _height);
+  for(int i=0; i< _height; i++){
+    for(int j=0; j< _width; j++){
+      int r = (int)get(i,j).r-(int)other.get(i,j).r*alpha;
+      unsigned char red = std::min(r,0);
+      int g = (int)get(i,j).g-other.get(i,j).g*alpha;
+      unsigned char green = std::min(g,0);
+      int b = (int)get(i,j).b-other.get(i,j).b*alpha;
+      unsigned char blue = std::min(b,0);
+      result.set(i,j,{red,green,blue});
+    }
+  }
+  return result;
 }
 
 Image Image::multiply(const Image& other) const {
-   Image result(0, 0);
-   
-   return result;
+  Image result(_width, _height);
+  for(int i=0; i< _height; i++){
+    for(int j=0; j< _width; j++){
+      unsigned char red = (int)get(i,j).r*(int)other.get(i,j).r/255;
+      unsigned char green = (int)get(i,j).g*(int)other.get(i,j).g/255;
+      unsigned char blue = (int)get(i,j).b*(int)other.get(i,j).b/255;
+      result.set(i,j,{red,green,blue});
+    }
+  }
+  return result;
 }
 
 Image Image::difference(const Image& other) const {
-   Image result(0, 0);
-  
-   return result;
+  Image result(0, 0);
+  for(int i=0; i< _height; i++){
+    for(int j=0; j< _width; j++){
+      unsigned char red = std::abs((int)get(i,j).r-(int)other.get(i,j).r);
+      unsigned char green = std::abs((int)get(i,j).g-(int)other.get(i,j).g);
+      unsigned char blue = std::abs((int)get(i,j).b-(int)other.get(i,j).b);
+      result.set(i,j,{red,green,blue});
+    }
+  }
+  return result;
 }
 
 Image Image::lightest(const Image& other) const {
-   Image result(0, 0);
-  
-   return result;
+  Image result(_width, _height);
+  for(int i=0; i< _height; i++){
+    for(int j=0; j< _width; j++){
+         
+         
+    }
+  }
+  return result;
 }
 
 Image Image::darkest(const Image& other) const {
-   Image result(0, 0);
-  
-   return result;
+  Image result(_width, _height);
+  for(int i=0; i< _height; i++){
+    for(int j=0; j< _width; j++){
+         
+         
+    }
+  }
+  return result;
 }
 
 Image Image::gammaCorrect(float gamma) const {
@@ -200,14 +246,14 @@ Image Image::gammaCorrect(float gamma) const {
    Image result(_width, _height);
    for(int i=0; i< _height; i++){
       for(int j=0; j< _width; j++){
-         unsigned char red = get(i,j).r ;
-         unsigned char green = get(i,j).g;
-         unsigned char blue = get(i,j).b;
-         red = std::pow((float)red/255,gamma) * 255;
-         green = std::pow((float)green/255,gamma) * 255;
-         blue = std::pow((float)blue/255,gamma) * 255;
-         Pixel myPixel ={red,green,blue};
-         result.set(i,j,myPixel);
+        unsigned char red = get(i,j).r ;
+        unsigned char green = get(i,j).g;
+        unsigned char blue = get(i,j).b;
+        red = std::pow((float)red/255,gamma) * 255;
+        green = std::pow((float)green/255,gamma) * 255;
+        blue = std::pow((float)blue/255,gamma) * 255;
+        Pixel myPixel ={red,green,blue};
+        result.set(i,j,myPixel);
       }
    }
    return result;
@@ -217,41 +263,49 @@ Image Image::alphaBlend(const Image& other, float alpha) const {
    Image result(_width, _height);
    for(int i=0; i< _height; i++){
       for(int j=0; j< _width; j++){
-         unsigned char red = (1-alpha)*(get(i,j).r)+alpha*(other.get(i,j).r) ;
-         unsigned char green = (1-alpha)*(get(i,j).g)+alpha*(other.get(i,j).g) ;
-         unsigned char blue = (1-alpha)*(get(i,j).b)+alpha*(other.get(i,j).b) ; 
-         Pixel myPixel ={red,green,blue};
-         result.set(i,j,myPixel);
+        unsigned char red = (1-alpha)*(get(i,j).r)+alpha*(other.get(i,j).r) ;
+        unsigned char green = (1-alpha)*(get(i,j).g)+alpha*(other.get(i,j).g) ;
+        unsigned char blue = (1-alpha)*(get(i,j).b)+alpha*(other.get(i,j).b) ; 
+        Pixel myPixel ={red,green,blue};
+        result.set(i,j,myPixel);
       }
    }
    return result;
 }
 
 Image Image::invert() const {
-   Image image(0, 0);
-   
+   Image image(_width, _height);
+   for(int i=0; i< _height; i++){
+      for(int j=0; j< _width; j++){
+        unsigned char red = 255-(int)get(i,j).r;
+        unsigned char green = 255-(int)get(i,j).g;
+        unsigned char blue = 255-(int)get(i,j).b;
+        Pixel myPixel ={red,green,blue};
+        image.set(i,j,myPixel);
+      }
+   }   
    return image;
 }
 
 Image Image::grayscale() const {
-   Image result(_width, _height);
-   for(int i=0; i< _height; i++){
-      for(int j=0; j< _width; j++){
-         unsigned char red = get(i,j).r ;
-         unsigned char green = get(i,j).g;
-         unsigned char blue = get(i,j).b;
-         unsigned char average = (red+green+blue)/3;
-         Pixel myPixel ={average,average,average};
-         result.set(i,j,myPixel);
-      }
-   }
-   return result;
+  Image result(_width, _height);
+  for(int i=0; i< _height; i++){
+    for(int j=0; j< _width; j++){
+      unsigned char red = get(i,j).r ;
+      unsigned char green = get(i,j).g;
+      unsigned char blue = get(i,j).b;
+      unsigned char average = (red+green+blue)/3;
+      Pixel myPixel ={average,average,average};
+      result.set(i,j,myPixel);
+    }
+  }
+  return result;
 }
 
 Image Image::colorJitter(int size) const {
-   Image image(0, 0);
+  Image image(0, 0);
   
-   return image;
+  return image;
 }
 
 Image Image::bitmap(int size) const {

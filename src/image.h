@@ -1,4 +1,8 @@
 // Copyright 2021, Aline Normoyle, alinen
+/* Name: Yue Chen
+   File: image.h
+   Desc: This is the file that stores the fields and the strucutres of Image class
+*/
 
 #ifndef AGL_IMAGE_H_
 #define AGL_IMAGE_H_
@@ -130,15 +134,15 @@ class Image {
 
   // Apply the following calculation to the pixels in 
   // our image and the given image:
-  //    result.pixel = this.pixel + other.pixel
+  //    result.pixel = this.pixel + other.pixel * alpha
   // Assumes that the two images are the same size
-  Image add(const Image& other) const;
+  Image add(const Image& other,float alpha) const;
 
   // Apply the following calculation to the pixels in 
   // our image and the given image:
-  //    result.pixel = this.pixel - other.pixel
+  //    result.pixel = this.pixel - other.pixel * alpha
   // Assumes that the two images are the same size
-  Image subtract(const Image& other) const;
+  Image subtract(const Image& other, float alpha) const;
 
   // Apply the following calculation to the pixels in 
   // our image and the given image:
