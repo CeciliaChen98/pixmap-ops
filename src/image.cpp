@@ -157,36 +157,43 @@ void Image::replace(const Image& image, int startx, int starty) {
 }
 
 Image Image::swirl() const {
-  Image result(0, 0);
+  Image result(_width, _height);
+  Pixel temp;
+  for(int i=0; i< _height; i++){
+    for(int j=0; j< _width; j++){
+      temp = {get(i,j).g,get(i,j).b,get(i,j).r};
+      result.set(i,j,temp);
+    }
+  }  
   return result;
 }
 
-Image Image::add(const Image& other,float alpha) const {
+Image Image::add(const Image& other) const {
   Image result(_width, _height);
   for(int i=0; i< _height; i++){
     for(int j=0; j< _width; j++){
-      int r = (int)get(i,j).r+(int)other.get(i,j).r*alpha;
-      unsigned char red = std::max(r,255);
-      int g = (int)get(i,j).g+other.get(i,j).g*alpha;
-      unsigned char green = std::max(g,255);
-      int b = (int)get(i,j).b+other.get(i,j).b*alpha;
-      unsigned char blue = std::max(b,255);
+      int r = (int)get(i,j).r+(int)other.get(i,j).r;
+      unsigned char red = std::min(r,255);
+      int g = (int)get(i,j).g+other.get(i,j).g;
+      unsigned char green = std::min(g,255);
+      int b = (int)get(i,j).b+other.get(i,j).b;
+      unsigned char blue = std::min(b,255);
       result.set(i,j,{red,green,blue});
     }
   }
   return result;
 }
 
-Image Image::subtract(const Image& other,float alpha) const {
+Image Image::subtract(const Image& other) const {
   Image result(_width, _height);
   for(int i=0; i< _height; i++){
     for(int j=0; j< _width; j++){
-      int r = (int)get(i,j).r-(int)other.get(i,j).r*alpha;
-      unsigned char red = std::min(r,0);
-      int g = (int)get(i,j).g-other.get(i,j).g*alpha;
-      unsigned char green = std::min(g,0);
-      int b = (int)get(i,j).b-other.get(i,j).b*alpha;
-      unsigned char blue = std::min(b,0);
+      int r = (int)get(i,j).r-(int)other.get(i,j).r;
+      unsigned char red = std::max(r,0);
+      int g = (int)get(i,j).g-other.get(i,j).g;
+      unsigned char green = std::max(g,0);
+      int b = (int)get(i,j).b-other.get(i,j).b;
+      unsigned char blue = std::max(b,0);
       result.set(i,j,{red,green,blue});
     }
   }
@@ -207,7 +214,7 @@ Image Image::multiply(const Image& other) const {
 }
 
 Image Image::difference(const Image& other) const {
-  Image result(0, 0);
+  Image result(_width, _height);
   for(int i=0; i< _height; i++){
     for(int j=0; j< _width; j++){
       unsigned char red = std::abs((int)get(i,j).r-(int)other.get(i,j).r);
@@ -223,8 +230,10 @@ Image Image::lightest(const Image& other) const {
   Image result(_width, _height);
   for(int i=0; i< _height; i++){
     for(int j=0; j< _width; j++){
-         
-         
+      unsigned char red = std::max((int)get(i,j).r,(int)other.get(i,j).r);
+      unsigned char green = std::max((int)get(i,j).g,(int)other.get(i,j).g);
+      unsigned char blue = std::max((int)get(i,j).b,(int)other.get(i,j).b);
+      result.set(i,j,{red,green,blue});  
     }
   }
   return result;
@@ -234,8 +243,10 @@ Image Image::darkest(const Image& other) const {
   Image result(_width, _height);
   for(int i=0; i< _height; i++){
     for(int j=0; j< _width; j++){
-         
-         
+      unsigned char red = std::min((int)get(i,j).r,(int)other.get(i,j).r);
+      unsigned char green = std::min((int)get(i,j).g,(int)other.get(i,j).g);
+      unsigned char blue = std::min((int)get(i,j).b,(int)other.get(i,j).b);
+      result.set(i,j,{red,green,blue});           
     }
   }
   return result;

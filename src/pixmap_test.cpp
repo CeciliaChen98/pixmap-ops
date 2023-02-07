@@ -74,7 +74,14 @@ int main(int argc, char** argv)
    gamma = image.gammaCorrect(2.2f);
    gamma.save("earth-gamma-2.2.png"); 
 
-   // alpha blend
+   // invert
+   Image invert = image.invert();
+   invert.save("earth-invert.png"); 
+
+   // swirl
+   Image swirl = image.swirl();
+   swirl.save("earth-swirl.png"); 
+
    Image soup;
    soup.load("../images/soup.png");
 
@@ -82,8 +89,45 @@ int main(int argc, char** argv)
    int x = (int) (0.5f * (image.height() - soup.height()));
    Image background = image.subimage(x, y, soup.width(), soup.height());
    background.save("background-test.png");
+
+   //alpha blend
    Image blend = background.alphaBlend(soup, 0.5f);
    image.replace(blend, x, y);
    image.save("earth-blend-0.5.png");
+
+   //add
+   Image add = background.add(blend);
+   image.replace(add, x, y);
+   image.save("earth-add-0.5.png");
+
+   //substract
+   Image substract = background.subtract(blend);
+   image.replace(substract, x, y);
+   image.save("earth-substract-0.5.png");
+
+   //multiply
+   Image multiply = background.multiply(blend);
+   image.replace(multiply, x, y);
+   image.save("earth-multiply-0.5.png");
+
+   //lightest
+   Image lightest = background.lightest(soup);
+   image.replace(lightest, x, y);
+   image.save("earth-lightest-soup.png");
+
+   //darkest
+   Image darkest = background.darkest(soup);
+   image.replace(darkest, x, y);
+   image.save("earth-darkest-soup.png");
+
+   //difference
+   Image difference = background.difference(soup);
+   image.replace(difference, x, y);
+   image.save("earth-difference-soup.png");
+
+   copy.free();
+   difference.free();
+   darkest.free();
+   image.free();
 }
 

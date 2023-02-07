@@ -45,7 +45,47 @@ pixmap-ops/build $ ../bin/pixmap_art
 
 ## Image operators
 
-TODO: Document the features of your PPM image class here. Include example images.
+![avatar](/images/earth-add-soup.png)
+```
+1. add
+```
+
+
+![avatar](/images/earth-substract-soup.png)
+```
+2. substract
+```
+
+![avatar](/images/earth-multiply-soup.png)
+```
+3. multiply
+```
+
+![avatar](/images/earth-invert.png)
+```
+4. invert
+```
+
+![avatar](/images/earth-lightest-soup.png)
+```
+5. lightest
+```
+
+![avatar](/images/earth-darkest-soup.png)
+```
+6. darkest
+```
+
+![avatar](/images/earth-difference-soup.png)
+```
+7. difference 
+```
+
+![avatar](/images/earth-swirl.png)
+```
+8. swirl
+```
+
 
 ## Results
 

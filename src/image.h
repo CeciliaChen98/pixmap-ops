@@ -136,13 +136,13 @@ class Image {
   // our image and the given image:
   //    result.pixel = this.pixel + other.pixel * alpha
   // Assumes that the two images are the same size
-  Image add(const Image& other,float alpha) const;
+  Image add(const Image& other) const;
 
   // Apply the following calculation to the pixels in 
   // our image and the given image:
   //    result.pixel = this.pixel - other.pixel * alpha
   // Assumes that the two images are the same size
-  Image subtract(const Image& other, float alpha) const;
+  Image subtract(const Image& other) const;
 
   // Apply the following calculation to the pixels in 
   // our image and the given image:
@@ -191,6 +191,9 @@ class Image {
 
   // Fill this image with a color
   void fill(const Pixel& c);
+
+  //free the data array;
+  void free();
 
  private:
    int _width;
