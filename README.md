@@ -89,5 +89,7 @@ pixmap-ops/build $ ../bin/pixmap_art
 
 ## Results
 
-TODO: Show artworks using your class
-
+```
+My artwork
+```
+![avatar](/images/my_art_work.png)

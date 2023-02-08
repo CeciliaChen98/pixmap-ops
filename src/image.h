@@ -192,7 +192,6 @@ class Image {
   // Fill this image with a color
   void fill(const Pixel& c);
 
-  //free the data array;
   void free();
 
  private:

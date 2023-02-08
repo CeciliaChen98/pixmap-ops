@@ -125,9 +125,5 @@ int main(int argc, char** argv)
    image.replace(difference, x, y);
    image.save("earth-difference-soup.png");
 
-   copy.free();
-   difference.free();
-   darkest.free();
-   image.free();
 }
 

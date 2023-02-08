@@ -16,17 +16,19 @@ namespace agl {
 
 
 Image::Image():_width(0),_height(0){
+  _data = new Pixel[0];
   //std::cout<<"default width: "<<_width<<", defult height: "<<_height<<std::endl;
 }
 
 Image::Image(int width, int height):_width(width),_height(height){
-  Pixel* data = new Pixel[width*height];
+  _data = new Pixel[width*height];
   _channel = 3;
-  _data = data;
   //std::cout<<"width: "<<_width<<", height: "<<_height<<std::endl;
 }
 
-Image::Image(const Image& orig):_width(orig._width),_height(orig._height),_data(orig._data),_channel(orig._channel) {
+Image::Image(const Image& orig):_width(orig._width),_height(orig._height),_channel(orig._channel){
+  _data = new Pixel[_width*_height];
+  memcpy(_data,orig._data,_width*_height*3);
   //std::cout<<"copy width: "<<_width<<", copy height: "<<_height<<std::endl;
 }
 
@@ -37,12 +39,13 @@ Image& Image::operator=(const Image& orig) {
   _width=orig.width();
   _height=orig.height();
   _channel=orig._channel;
-  _data = orig._data;
+  memcpy(_data,orig._data,_width*_height*3);
   //std::cout<<"assignment op "<<_width<<","<<_height<<std::endl;
   return *this;
 }
 
 Image::~Image() {
+  free();
   //std::cout<<"destructor: "<<_width<<","<<_height<<std::endl;
 }
 
@@ -59,9 +62,11 @@ unsigned char* Image::data() const {
 }
 
 void Image::set(int width, int height, unsigned char* data) {
+  free();
   _height = height;
   _width = width;
-  _data = (Pixel*)data;
+  _data = new Pixel[_width*_height];
+  memcpy(_data, data, _height*_width*3);
 } 
 
 bool Image::load(const std::string& filename, bool flip) {
@@ -70,6 +75,7 @@ bool Image::load(const std::string& filename, bool flip) {
     return false;
   }
   set(_width,_height,data);
+  stbi_image_free(data);
   return true;
 }
 
@@ -327,6 +333,10 @@ Image Image::bitmap(int size) const {
 
 void Image::fill(const Pixel& c) {
   }
+
+void Image::free(){
+  delete[] _data;
+}
 
 }  // namespace agl
 
