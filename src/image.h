@@ -1,9 +1,10 @@
 // Copyright 2021, Aline Normoyle, alinen
-/* Name: Yue Chen
-   File: image.h
-   Desc: This is the file that stores the fields and the strucutres of Image class
+/**
+* This is the file that stores the fields and the strucutres of Image class
+*
+* @author: Yue Chen
+* @version: 2.8.2023
 */
-
 #ifndef AGL_IMAGE_H_
 #define AGL_IMAGE_H_
 

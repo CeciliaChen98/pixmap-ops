@@ -1,3 +1,9 @@
+/**
+* Using the methods from "image.cpp", create an image (artwork)
+*
+* @author: Yue Chen
+* @version: 2.8.2023
+*/
 #include <iostream>
 #include "image.h"
 using namespace std;

@@ -1,7 +1,10 @@
 // Copyright 2021, Aline Normoyle, alinen
-/* Name: Yue Chen
-   File: image.cpp
-   Desc: This is the file where the functions from image.h are being implemented
+/**
+* This is the file where the functions from image.h are being implemented
+* It can load images, save images, and do modifications to images
+*
+* @author: Yue Chen
+* @version: 2.8.2023
 */
 #include "image.h"
 
